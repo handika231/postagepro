@@ -21,7 +21,7 @@ class CheckCostLoading extends CheckCostState {
 }
 
 class CheckCostLoaded extends CheckCostState {
-  CheckCostLoaded(this.cost);
+  const CheckCostLoaded(this.cost);
 
   final Map<String, dynamic> cost;
 
@@ -30,7 +30,7 @@ class CheckCostLoaded extends CheckCostState {
 }
 
 class CheckCostError extends CheckCostState {
-  CheckCostError(this.message);
+  const CheckCostError(this.message);
 
   final String message;
 

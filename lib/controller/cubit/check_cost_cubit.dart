@@ -11,7 +11,7 @@ class CheckCostCubit extends Cubit<CheckCostState> {
   CheckCostCubit(this.service) : super(CheckCostInitial());
 
   Future<void> getCosts(CostRequestModel requestModel) async {
-    emit(CheckCostLoading(isLoading: true));
+    emit(const CheckCostLoading(isLoading: true));
     try {
       final response = await service.checkCost(
         requestModel.origin,

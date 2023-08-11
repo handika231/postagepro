@@ -14,11 +14,11 @@ class CityDestinationLoading extends CityDestinationState {}
 class CityDestinationLoaded extends CityDestinationState {
   final List<CityModel> cityDestination;
 
-  CityDestinationLoaded(this.cityDestination);
+  const CityDestinationLoaded(this.cityDestination);
 }
 
 class CityDestinationError extends CityDestinationState {
   final String message;
 
-  CityDestinationError(this.message);
+  const CityDestinationError(this.message);
 }

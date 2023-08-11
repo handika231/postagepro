@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../controller/cubit/check_cost_cubit.dart';
+import 'package:postagepro/controller/cubit/check_cost_cubit.dart';
+import 'package:postagepro/model/cost_request_model.dart';
+
 import '../../controller/cubit/city_destination_cubit.dart';
 import '../../controller/cubit/city_origin_cubit.dart';
 import '../../controller/cubit/province_cubit.dart';
@@ -21,7 +23,12 @@ class _HomePageState extends State<HomePage> {
   FocusNode _weightFocusNode = FocusNode();
 
   bool _autoValidate = false;
-
+  CostRequestModel data = CostRequestModel(
+    origin: '',
+    destination: '',
+    weight: 0,
+    courier: '',
+  );
   @override
   void initState() {
     super.initState();
@@ -114,6 +121,12 @@ class _HomePageState extends State<HomePage> {
               builder: (context, state) {
                 if (state is CityOriginLoaded) {
                   return DropdownSearch(
+                    itemAsString: (item) => item.cityName,
+                    onChanged: (value) {
+                      if (value != null) {
+                        data.origin = value.cityId;
+                      }
+                    },
                     dropdownDecoratorProps: const DropDownDecoratorProps(
                       baseStyle: TextStyle(
                         color: Color(0xFF421D54),
@@ -129,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    items: state.cityOrigin.map((e) => e.cityName).toList(),
+                    items: state.cityOrigin.map((e) => e).toList(),
                   );
                 }
                 if (state is CityOriginLoading) {
@@ -211,6 +224,12 @@ class _HomePageState extends State<HomePage> {
               builder: (context, state) {
                 if (state is CityDestinationLoaded) {
                   return DropdownSearch(
+                    itemAsString: (item) => item.cityName,
+                    onChanged: (value) {
+                      if (value != null) {
+                        data.destination = value.cityId;
+                      }
+                    },
                     dropdownDecoratorProps: const DropDownDecoratorProps(
                       baseStyle: TextStyle(
                         color: Color(0xFF421D54),
@@ -226,8 +245,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    items:
-                        state.cityDestination.map((e) => e.cityName).toList(),
+                    items: state.cityDestination.map((e) => e).toList(),
                   );
                 }
                 if (state is CityDestinationLoading) {
@@ -258,6 +276,11 @@ class _HomePageState extends State<HomePage> {
                   ? AutovalidateMode.always
                   : AutovalidateMode.disabled,
               child: TextFormField(
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    data.weight = int.parse(value);
+                  }
+                },
                 controller: _weightController,
                 focusNode: _weightFocusNode,
                 decoration: const InputDecoration(
@@ -290,6 +313,12 @@ class _HomePageState extends State<HomePage> {
                   "name": "Citra Van Titipan Kilat (TIKI)",
                 }
               ],
+              itemAsString: (item) => item['name'],
+              onChanged: (value) {
+                if (value != null) {
+                  data.courier = value['code'].toString().toLowerCase();
+                }
+              },
               popupProps: PopupProps.menu(
                 showSearchBox: true,
                 itemBuilder: (context, dynamic item, bool isSelected) {
@@ -325,27 +354,25 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             const SizedBox(height: 13),
-            BlocBuilder<CheckCostCubit, CheckCostState>(
-              builder: (context, state) {
-                return ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    primary: const Color(0xFFC94A38),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    minimumSize: const Size(400, 50),
-                  ),
-                  child: Text(
-                    'Cek Ongkir',
-                    style: GoogleFonts.notoSans(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFFE3F0FE),
-                    ),
-                  ),
-                );
+            ElevatedButton(
+              onPressed: () {
+                context.read<CheckCostCubit>().getCosts(data);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFC94A38),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                minimumSize: const Size(400, 50),
+              ),
+              child: Text(
+                'Cek Ongkir',
+                style: GoogleFonts.notoSans(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFFE3F0FE),
+                ),
+              ),
             ),
           ],
         ),
